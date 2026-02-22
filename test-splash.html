@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="az">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TEST — Splash Screen | Busamania RC</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,600;0,700;0,800;0,900;1,900&display=swap"
+        rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --gold: #d4af37;
+            --gold-light: #f5d76e;
+            --black: #000000;
+            --border: rgba(212, 175, 55, 0.25);
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #000;
+            color: #fff;
+            overflow: hidden;
+            /* no scroll while splash is active */
+        }
+
+        /* ═══════════════════════════════════════
+           SPLASH SCREEN — fullscreen, centered logo
+        ═══════════════════════════════════════ */
+        #splash {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2.5rem;
+            cursor: pointer;
+
+            /* Fade in on load */
+            opacity: 0;
+            animation: splashFadeIn 0.8s ease forwards;
+        }
+
+        @keyframes splashFadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Transition class — fades out and scales up */
+        #splash.leaving {
+            animation: splashLeave 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes splashLeave {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            100% {
+                opacity: 0;
+                transform: scale(1.08);
+            }
+        }
+
+        /* Outer glow ring */
+        .splash-ring {
+            position: relative;
+            width: 440px;
+            height: 440px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Animated gold ring */
+        .splash-ring::before {
+            content: '';
+            position: absolute;
+            inset: -16px;
+            border-radius: 50%;
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            animation: ringPulse 2.5s ease-in-out infinite;
+        }
+
+        .splash-ring::after {
+            content: '';
+            position: absolute;
+            inset: -32px;
+            border-radius: 50%;
+            border: 1px solid rgba(212, 175, 55, 0.06);
+            animation: ringPulse 2.5s ease-in-out infinite 0.4s;
+        }
+
+        @keyframes ringPulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.5;
+            }
+
+            50% {
+                transform: scale(1.04);
+                opacity: 1;
+            }
+        }
+
+        /* Spinning Logo */
+        .splash-logo-wrap {
+            perspective: 900px;
+            width: 420px;
+            height: 420px;
+        }
+
+        .splash-spinner {
+            width: 420px;
+            height: 420px;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: spin3d 7s linear infinite;
+        }
+
+        @keyframes spin3d {
+            from {
+                transform: rotateY(0deg);
+            }
+
+            to {
+                transform: rotateY(360deg);
+            }
+        }
+
+        .splash-spinner img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            filter:
+                drop-shadow(0 0 30px rgba(212, 175, 55, 0.5)) drop-shadow(0 0 60px rgba(212, 175, 55, 0.2));
+        }
+
+        .splash-spinner .back {
+            transform: rotateY(180deg) translateZ(1px);
+        }
+
+        /* "Giriş" hint text */
+        .splash-hint {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            animation: hintBlink 2s ease-in-out infinite;
+        }
+
+        @keyframes hintBlink {
+
+            0%,
+            100% {
+                opacity: 0.4;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        .splash-hint span {
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            color: var(--gold);
+        }
+
+        .splash-hint .hint-line {
+            width: 1px;
+            height: 30px;
+            background: linear-gradient(to bottom, var(--gold), transparent);
+        }
+
+        /* Gold particle sparks */
+        .spark {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            border-radius: 50%;
+            background: var(--gold);
+            animation: sparkFloat var(--dur, 3s) ease-in-out infinite var(--delay, 0s);
+            left: var(--x, 50%);
+            top: var(--y, 50%);
+        }
+
+        @keyframes sparkFloat {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 0;
+            }
+
+            20% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translate(var(--tx, 0px), var(--ty, -80px)) scale(0);
+                opacity: 0;
+            }
+        }
+
+        /* ═══════════════════════════════════════
+           MAIN CONTENT — hidden initially
+        ═══════════════════════════════════════ */
+        #main-content {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.6s ease 0.1s;
+        }
+
+        #main-content.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        /* ── Minimal nav for demo ── */
+        .site-header {
+            width: 100%;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-top {
+            background: #000;
+            border-bottom: 1px solid var(--border);
+            padding: 0.9rem 2.5rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            align-items: center;
+        }
+
+        .header-logo-wrap {
+            perspective: 600px;
+            justify-self: start;
+        }
+
+        .header-logo-spinner {
+            width: 52px;
+            height: 52px;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: spin3d 7s linear infinite;
+        }
+
+        .header-logo-spinner img {
+            position: absolute;
+            width: 52px;
+            height: 52px;
+            object-fit: contain;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+
+        .spinner-back {
+            transform: rotateY(180deg) translateZ(1px);
+        }
+
+        .header-club-name {
+            text-align: center;
+            justify-self: center;
+        }
+
+        .header-club-name a {
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .header-club-name h2 {
+            font-size: clamp(1.2rem, 2.5vw, 2.2rem);
+            font-weight: 900;
+            font-style: italic;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            white-space: nowrap;
+            background: linear-gradient(135deg, #b8860b, #d4af37, #fff8b0, #d4af37, #b8860b);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 2px 8px rgba(212, 175, 55, 0.35));
+        }
+
+        .header-club-name .tagline {
+            font-size: 0.55rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #666;
+            font-weight: 600;
+            margin-top: 4px;
+            white-space: nowrap;
+        }
+
+        .lang-sw {
+            justify-self: end;
+        }
+
+        .lang-sw button {
+            background: transparent;
+            border: 1px solid rgba(212, 175, 55, 0.5);
+            border-radius: 4px;
+            padding: 6px 14px;
+            color: #fff;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            cursor: pointer;
+        }
+
+        .header-nav {
+            background: #111;
+            border-bottom: 2px solid var(--gold);
+        }
+
+        .header-nav ul {
+            display: flex;
+            list-style: none;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header-nav ul li a {
+            display: block;
+            padding: 0.9rem 1.4rem;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #aaa;
+            text-decoration: none;
+            transition: color 0.25s;
+        }
+
+        .header-nav ul li a:hover,
+        .header-nav ul li a.active {
+            color: var(--gold);
+        }
+
+        /* Hero */
+        .hero {
+            min-height: 90vh;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+            background: radial-gradient(ellipse at 60% 40%, #1a1200, #000 70%);
+            padding: 0 5rem;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1.4rem;
+        }
+
+        .hero-eyebrow {
+            font-size: 0.7rem;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        .hero-title {
+            font-size: clamp(2rem, 4.5vw, 4.5rem);
+            font-weight: 900;
+            font-style: italic;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            line-height: 1;
+        }
+
+        .hero-title .gold {
+            color: var(--gold);
+        }
+
+        .hero-subtitle {
+            font-size: 0.9rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.8rem 1.8rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border-radius: 3px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .btn-gold {
+            background: var(--gold);
+            color: #000;
+            border-color: var(--gold);
+        }
+
+        .btn-gold:hover {
+            background: var(--gold-light);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: white;
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        /* Hero big spinner */
+        .hero-logo {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hero-spinner-wrap {
+            perspective: 1000px;
+        }
+
+        .hero-spinner {
+            width: 320px;
+            height: 320px;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: spin3d 7s linear infinite;
+        }
+
+        .hero-spinner img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 20px rgba(212, 175, 55, 0.2));
+        }
+
+        .hero-spinner .back {
+            transform: rotateY(180deg) translateZ(1px);
+        }
+
+        /* Test banner */
+        .test-banner {
+            background: rgba(212, 175, 55, 0.1);
+            border-bottom: 1px dashed var(--gold);
+            text-align: center;
+            padding: 8px;
+            font-size: 0.72rem;
+            letter-spacing: 2px;
+            color: var(--gold);
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ═══ SPLASH SCREEN ═══ -->
+    <div id="splash">
+        <!-- Gold sparks (generated by JS) -->
+
+        <div class="splash-ring">
+            <div class="splash-logo-wrap">
+                <div class="splash-spinner">
+                    <img src="assets/logo.png" alt="Busamania RC">
+                    <img src="assets/logo.png" alt="Busamania RC" class="back">
+                </div>
+            </div>
+        </div>
+
+        <div class="splash-hint">
+            <div class="hint-line"></div>
+            <span>Giriş üçün klikləyin</span>
+        </div>
+    </div>
+
+    <!-- ═══ MAIN CONTENT (hidden until splash is clicked) ═══ -->
+    <div id="main-content">
+
+        <div class="test-banner">⚠️ TEST MÜHİTİ — Əsas kod toxunulmayıb</div>
+
+        <header class="site-header">
+            <div class="header-top">
+                <div class="header-logo-wrap">
+                    <div class="header-logo-spinner">
+                        <img src="assets/logo.png" alt="Busamania RC">
+                        <img src="assets/logo.png" alt="Busamania RC" class="spinner-back">
+                    </div>
+                </div>
+                <div class="header-club-name">
+                    <a href="#">
+                        <h2>BUSAMANIA <span style="-webkit-text-fill-color:var(--gold)">RC</span></h2>
+                        <p class="tagline">Azerbaijan Hayabusa Riders Club · Since 2017</p>
+                    </a>
+                </div>
+                <div class="lang-sw">
+                    <button>🌐 AZ ▾</button>
+                </div>
+            </div>
+
+            <nav class="header-nav">
+                <ul>
+                    <li><a href="#" class="active">Ana Səhifə</a></li>
+                    <li><a href="#">Haqqımızda</a></li>
+                    <li><a href="#">Klub Üzvləri</a></li>
+                    <li><a href="#">Hayabusa Generations</a></li>
+                    <li><a href="#">Nizamnamə</a></li>
+                    <li><a href="#">Qalereya</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <section class="hero">
+            <div class="hero-content">
+                <p class="hero-eyebrow">Azərbaycan · 2017-dən</p>
+                <h1 class="hero-title">BUSAMANIA <span class="gold">RC</span></h1>
+                <p class="hero-subtitle">Qardaşlıq. Sürət. Ehtiram.</p>
+                <div class="hero-cta">
+                    <a href="#" class="btn btn-gold">Klubu Kəşf Et</a>
+                    <a href="#" class="btn btn-outline">Hayabusa Generations</a>
+                </div>
+            </div>
+            <div class="hero-logo">
+                <div class="hero-spinner-wrap">
+                    <div class="hero-spinner">
+                        <img src="assets/logo.png" alt="Logo">
+                        <img src="assets/logo.png" alt="Logo" class="back">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div><!-- /#main-content -->
+
+    <script>
+        const splash = document.getElementById('splash');
+        const content = document.getElementById('main-content');
+
+        // Generate random gold sparks around the logo
+        for (let i = 0; i < 18; i++) {
+            const s = document.createElement('div');
+            s.className = 'spark';
+            const angle = Math.random() * 360;
+            const dist = 140 + Math.random() * 60;
+            const x = 50 + dist * Math.cos(angle * Math.PI / 180) * 0.06;
+            const y = 50 + dist * Math.sin(angle * Math.PI / 180) * 0.06;
+            s.style.cssText = `
+                --x: ${x}%;
+                --y: ${y}%;
+                --dur: ${2 + Math.random() * 2}s;
+                --delay: ${Math.random() * 2}s;
+                --tx: ${(Math.random() - 0.5) * 60}px;
+                --ty: ${-40 - Math.random() * 60}px;
+            `;
+            splash.appendChild(s);
+        }
+
+        // Click splash → fade out, show main content
+        splash.addEventListener('click', () => {
+            splash.classList.add('leaving');
+
+            // After fade-out animation ends, hide splash and show content
+            splash.addEventListener('animationend', () => {
+                splash.style.display = 'none';
+                document.body.style.overflow = ''; // re-enable scrolling
+                content.classList.add('visible');
+            }, { once: true });
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .admin-nav {
+            padding: 1rem 2rem;
+            background: #111;
+            border-bottom: 1px solid var(--accent-gold);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .admin-panel {
+            padding: 2rem;
+        }
+
+        .admin-section {
+            display: none;
+            background: #1a1a1a;
+            padding: 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border: 1px solid #333;
+        }
+
+        .admin-section.active {
+            display: block;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: var(--secondary-bg);
+            border: 1px solid var(--accent-gold);
+            color: var(--accent-gold);
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .tab-btn.active,
+        .tab-btn:hover {
+            background: var(--accent-gold);
+            color: black;
+        }
+
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: #222;
+            margin-bottom: 0.5rem;
+            border-radius: 4px;
+        }
+
+        .delete-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- This is a front-end demo admin. Production requires backend. -->
+    <div class="admin-nav">
+        <div style="color: var(--accent-gold); font-weight: bold; font-size: 1.2rem;">Dashboard</div>
+        <div>
+            <a href="../index.html" style="margin-right: 1rem;">View Site</a>
+            <button id="logout-btn" class="btn" style="padding: 0.3rem 1rem; margin-top: 0;">Logout</button>
+        </div>
+    </div>
+
+    <div class="container admin-panel">
+        <div class="admin-warning">This is a front-end demo admin. Data is saved to localStorage. Production requires
+            backend.</div>
+
+        <div class="tab-buttons">
+            <button class="tab-btn active" data-target="about-sec">Edit About</button>
+            <button class="tab-btn" data-target="members-sec">Manage Members</button>
+            <button class="tab-btn" data-target="gallery-sec">Manage Gallery</button>
+            <button class="tab-btn" data-target="charter-sec">Manage Charter</button>
+        </div>
+
+        <div id="about-sec" class="admin-section active">
+            <h2>Edit About Page</h2><br>
+            <div class="form-group">
+                <label>Mission</label>
+                <textarea id="edit-mission" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Vision</label>
+                <textarea id="edit-vision" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Intro Text</label>
+                <textarea id="edit-intro" rows="4"></textarea>
+            </div>
+            <button id="save-about" class="btn">Save About Text</button>
+        </div>
+
+        <div id="members-sec" class="admin-section">
+            <h2>Manage Members</h2><br>
+            <div class="form-group">
+                <input type="text" id="mem-name" placeholder="Name" style="margin-bottom:10px;">
+                <input type="text" id="mem-bike" placeholder="Motorcycle" style="margin-bottom:10px;">
+                <input type="text" id="mem-bio" placeholder="Bio" style="margin-bottom:10px;">
+                <input type="text" id="mem-img" placeholder="Image URL (optional)">
+                <button id="add-member" class="btn">Add Member</button>
+            </div>
+            <div id="members-list"></div>
+        </div>
+
+        <div id="gallery-sec" class="admin-section">
+            <h2>Manage Gallery</h2><br>
+            <div class="form-group">
+                <input type="text" id="gal-url" placeholder="Image URL">
+                <button id="add-gallery" class="btn">Add Image</button>
+            </div>
+            <div id="gallery-list"></div>
+        </div>
+
+        <div id="charter-sec" class="admin-section">
+            <h2>Manage Charter Rules</h2><br>
+            <div class="form-group">
+                <input type="text" id="charter-title" placeholder="Rule Title" style="margin-bottom:10px;">
+                <textarea id="charter-content" placeholder="Rule Content" rows="3"></textarea>
+                <button id="add-charter" class="btn">Add Rule</button>
+            </div>
+            <div id="charter-list"></div>
+        </div>
+
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+
+</html>

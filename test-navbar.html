@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="az">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TEST — Navbar Dizayn | Busamania RC</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,600;0,700;0,800;0,900;1,900&display=swap"
+        rel="stylesheet">
+    <style>
+        /* ── RESET ── */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --gold: #d4af37;
+            --gold-light: #f5d76e;
+            --black: #000000;
+            --dark: #0a0a0a;
+            --darker: #111111;
+            --border: rgba(212, 175, 55, 0.25);
+            --muted: #777777;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: var(--black);
+            color: white;
+        }
+
+        /* ═══════════════════════════════════════════
+           HEADER — Two-row layout (like Hells Angels)
+        ═══════════════════════════════════════════ */
+        .site-header {
+            width: 100%;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        /* ── TOP ROW: Logo | Club Name (center) | Lang ── */
+        .header-top {
+            background: var(--black);
+            border-bottom: 1px solid var(--border);
+            padding: 0.9rem 2.5rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            align-items: center;
+        }
+
+        /* Spinning Logo — left-aligned in first column */
+        .header-logo-wrap {
+            perspective: 600px;
+            flex-shrink: 0;
+            justify-self: start;
+        }
+
+        .header-logo-spinner {
+            width: 64px;
+            height: 64px;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: spinLogo 8s linear infinite;
+        }
+
+        .header-logo-spinner img {
+            position: absolute;
+            width: 64px;
+            height: 64px;
+            object-fit: contain;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+
+        .spinner-front {
+            transform: rotateY(0deg) translateZ(1px);
+        }
+
+        .spinner-back {
+            transform: rotateY(180deg) translateZ(1px);
+        }
+
+        @keyframes spinLogo {
+            from {
+                transform: rotateY(0deg);
+            }
+
+            to {
+                transform: rotateY(360deg);
+            }
+        }
+
+        /* Club Name — centered in middle column */
+        .header-club-name {
+            text-align: center;
+            justify-self: center;
+        }
+
+        .header-club-name a {
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .header-club-name h1 {
+            font-size: clamp(1.2rem, 2.5vw, 2.2rem);
+            font-weight: 900;
+            font-style: italic;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            white-space: nowrap;
+            background: linear-gradient(135deg, #b8860b 0%, #d4af37 30%, #fff8b0 55%, #d4af37 75%, #b8860b 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+            filter: drop-shadow(0 2px 8px rgba(212, 175, 55, 0.35));
+        }
+
+        .header-club-name .tagline {
+            font-size: 0.62rem;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            color: var(--muted);
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
+        /* Language Dropdown — right-aligned in last column */
+        .lang-switcher {
+            position: relative;
+            z-index: 1100;
+            justify-self: end;
+        }
+
+        .lang-current {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            background: transparent;
+            border: 1px solid rgba(212, 175, 55, 0.5);
+            border-radius: 4px;
+            padding: 7px 14px;
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: border-color 0.25s, background 0.25s;
+        }
+
+        .lang-current:hover {
+            border-color: var(--gold);
+            background: rgba(212, 175, 55, 0.07);
+        }
+
+        .lang-arrow {
+            font-size: 0.55rem;
+            transition: transform 0.25s;
+            display: inline-block;
+        }
+
+        .lang-switcher.open .lang-arrow {
+            transform: rotate(180deg);
+        }
+
+        .lang-dropdown {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            min-width: 175px;
+            background: rgba(5, 5, 5, 0.98);
+            border: 1px solid rgba(212, 175, 55, 0.5);
+            border-radius: 6px;
+            padding: 5px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
+            opacity: 0;
+            transform: translateY(-8px);
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        .lang-switcher.open .lang-dropdown {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: all;
+        }
+
+        .lang-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 12px;
+            border-radius: 4px;
+            border: none;
+            background: none;
+            color: #aaa;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        .lang-option:hover {
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--gold-light);
+        }
+
+        /* ── BOTTOM ROW: Horizontal Nav Links ── */
+        .header-nav {
+            background: var(--darker);
+            border-bottom: 2px solid var(--gold);
+        }
+
+        .header-nav ul {
+            display: flex;
+            list-style: none;
+            padding: 0 2rem;
+            margin: 0 auto;
+            gap: 0;
+            justify-content: center;
+        }
+
+        .header-nav ul li a {
+            display: block;
+            padding: 0.9rem 1.4rem;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #aaa;
+            text-decoration: none;
+            transition: color 0.25s, background 0.25s;
+            position: relative;
+        }
+
+        .header-nav ul li a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gold);
+            transition: width 0.3s ease;
+        }
+
+        .header-nav ul li a:hover {
+            color: var(--gold-light);
+        }
+
+        .header-nav ul li a:hover::after {
+            width: 100%;
+        }
+
+        .header-nav ul li a.active {
+            color: var(--gold);
+            background: rgba(212, 175, 55, 0.06);
+        }
+
+        .header-nav ul li a.active::after {
+            width: 100%;
+        }
+
+        /* ════════════════════════════════════════
+           HERO — Fullscreen with spinning logo
+        ════════════════════════════════════════ */
+        .hero {
+            min-height: 90vh;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+            background: radial-gradient(ellipse at 60% 40%, #1a1200 0%, #000 70%);
+            overflow: hidden;
+            position: relative;
+            padding: 0 5rem;
+        }
+
+        .hero-content {
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 1.4rem;
+        }
+
+        .hero-eyebrow {
+            font-size: 0.7rem;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        .hero-title {
+            font-size: clamp(2rem, 4.5vw, 4.5rem);
+            font-weight: 900;
+            font-style: italic;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            line-height: 1;
+        }
+
+        .hero-title .gold {
+            color: var(--gold);
+        }
+
+        .hero-subtitle {
+            font-size: 0.9rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.8rem 1.8rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border-radius: 3px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .btn-gold {
+            background: var(--gold);
+            color: #000;
+            border-color: var(--gold);
+        }
+
+        .btn-gold:hover {
+            background: var(--gold-light);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: white;
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        /* Big hero spinner */
+        .hero-logo {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2;
+        }
+
+        .hero-logo-spinner-wrap {
+            perspective: 1000px;
+        }
+
+        .hero-spinner {
+            width: 340px;
+            height: 340px;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: spinLogo 8s linear infinite;
+        }
+
+        .hero-spinner img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 20px rgba(212, 175, 55, 0.2));
+        }
+
+        .hero-spinner .back {
+            transform: rotateY(180deg) translateZ(1px);
+        }
+
+        /* Note banner */
+        .test-banner {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px dashed var(--gold);
+            text-align: center;
+            padding: 10px;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            color: var(--gold);
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- TEST BANNER -->
+    <div class="test-banner">⚠️ TEST MÜHİTİ — Əsas kod toxunulmayıb</div>
+
+    <!-- ═══ SITE HEADER (Two-Row) ═══ -->
+    <header class="site-header">
+
+        <!-- TOP ROW: Logo + Name + Lang -->
+        <div class="header-top">
+            <!-- Spinning Logo -->
+            <div class="header-logo-wrap">
+                <div class="header-logo-spinner">
+                    <img src="assets/logo.png" alt="Busamania RC" class="spinner-front">
+                    <img src="assets/logo.png" alt="Busamania RC" class="spinner-back">
+                </div>
+            </div>
+
+            <!-- Club Name -->
+            <div class="header-club-name">
+                <a href="index.html">
+                    <h1>Busamania <span
+                            style="font-style:normal;background:linear-gradient(135deg,#b8860b,#d4af37,#fff8b0,#d4af37,#b8860b);-webkit-background-clip:text;background-clip:text;">RC</span>
+                    </h1>
+                    <p class="tagline">Azerbaijan Hayabusa Riders Club · Since 2017</p>
+                </a>
+            </div>
+
+            <!-- Language Dropdown -->
+            <div class="lang-switcher" id="lang-sw">
+                <button class="lang-current" id="lang-btn">
+                    <span>🌐</span>
+                    <span id="lang-label">AZ</span>
+                    <span class="lang-arrow">▾</span>
+                </button>
+                <div class="lang-dropdown" id="lang-drop">
+                    <button class="lang-option" data-lang="az">🇦🇿 Azərbaycanca</button>
+                    <button class="lang-option" data-lang="en">🇬🇧 English</button>
+                    <button class="lang-option" data-lang="ru">🇷🇺 Русский</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOTTOM ROW: Navigation Links -->
+        <nav class="header-nav">
+            <ul>
+                <li><a href="#" class="active">Ana Səhifə</a></li>
+                <li><a href="#">Haqqımızda</a></li>
+                <li><a href="#">Klub Üzvləri</a></li>
+                <li><a href="#">Hayabusa Generations</a></li>
+                <li><a href="#">Nizamnamə</a></li>
+                <li><a href="#">Qalereya</a></li>
+            </ul>
+        </nav>
+
+    </header>
+
+    <!-- ═══ HERO ═══ -->
+    <section class="hero">
+        <div class="hero-content">
+            <p class="hero-eyebrow">Azərbaycan · 2017-dən</p>
+            <h1 class="hero-title">BUSAMANIA <span class="gold">RC</span></h1>
+            <p class="hero-subtitle">Qardaşlıq. Sürət. Ehtiram.</p>
+            <div class="hero-cta">
+                <a href="#" class="btn btn-gold">Klubu Kəşf Et</a>
+                <a href="#" class="btn btn-outline">Hayabusa Generations</a>
+            </div>
+        </div>
+        <div class="hero-logo">
+            <div class="hero-logo-spinner-wrap">
+                <div class="hero-spinner">
+                    <img src="assets/logo.png" alt="Logo">
+                    <img src="assets/logo.png" alt="Logo" class="back">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        const sw = document.getElementById('lang-sw');
+        const btn = document.getElementById('lang-btn');
+        const drop = document.getElementById('lang-drop');
+        const label = document.getElementById('lang-label');
+        const names = { az: 'AZ', en: 'EN', ru: 'RU' };
+
+        btn.addEventListener('click', e => { e.stopPropagation(); sw.classList.toggle('open'); });
+        document.addEventListener('click', () => sw.classList.remove('open'));
+
+        drop.querySelectorAll('.lang-option').forEach(opt => {
+            opt.addEventListener('click', e => {
+                e.stopPropagation();
+                label.textContent = names[opt.dataset.lang];
+                sw.classList.remove('open');
+            });
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,24 @@
+{
+    "about": {
+        "about-intro": "Busamania RC Azərbaycandakı elit motosiklet sürücülərinin eksklüziv bir birliyidir. Biz yalnız sürət üçün deyil, hörmət, intizam və birlik üçün sürürük.",
+        "about-mission": "Azərbaycanda Hayabusa və yüksək performans motosiklet həvəskarlarını bir qardaşlıq altında birləşdirmək, təhlükəsiz sürüşü, hörmeti və elit performansı təşviq etmək.",
+        "about-vision": "Regionun ən hörmətli və tanınan elit motosiklet klubu olmaq, sürücü yoldaşlığı və ictimai xidmət üçün standart qoymaq."
+    },
+    "members": [
+        { "name": "Elnur H.", "bike": "Suzuki Hayabusa Gen 3", "role": "President", "bio": "Qurucu & Prezident", "img": "" },
+        { "name": "Rauf A.", "bike": "Suzuki Hayabusa Gen 2", "role": "Vitse-President", "bio": "Yol Kapitanı", "img": "" },
+        { "name": "Kamran M.", "bike": "Suzuki Hayabusa Gen 1", "role": "Mexanik", "bio": "Baş Mexanik", "img": "" }
+    ],
+    "gallery": [
+        { "url": "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=800&q=80", "caption": "Hayabusa" },
+        { "url": "https://images.unsplash.com/photo-1449426468159-d96dbf08f19f?w=800&q=80", "caption": "Gece Sürüşü" },
+        { "url": "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=800&q=80", "caption": "Klub" }
+    ],
+    "charter": [
+        { "title": "Maddə 1: Hörmət və Qardaşlıq", "content": "Hər bir üzv digər üzvlərə ən yüksək hörmətlə yanaşmalıdır. Qardaşlıq hər şeydən üstündür." },
+        { "title": "Maddə 2: Sürüş Təhlükəsizliyi", "content": "Qrup sürüşlərində tam avadanlıq məcburidir. Ehtiyatsız sürüş dayandırmaya səbəb ola bilər." },
+        { "title": "Maddə 3: Toplantılara İştirak", "content": "Üzvlər rəsmi toplantı və tədbirlərin minimum 70%-inə iştirak etməlidir." }
+    ],
+    "heroStats": null,
+    "_lastUpdated": ""
+}

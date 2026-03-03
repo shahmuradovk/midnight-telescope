@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="az">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Girişi — Busamania RC</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --gold: #C9A84C;
+            --gold-light: #E8C96A;
+            --bg: #080808;
+            --bg2: #111111;
+            --bg3: #1a1a1a;
+            --text: #E8E8E8;
+            --text-dim: #888;
+            --error: #ff4d4d;
+            --radius: 14px;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Particles */
+        .particle {
+            position: fixed;
+            bottom: -20px;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--gold);
+            opacity: 0;
+            animation: rise var(--dur, 8s) ease-in var(--delay, 0s) infinite;
+        }
+
+        @keyframes rise {
+            0% {
+                transform: translateX(var(--sx, 0)) translateY(0);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 0.6;
+            }
+
+            90% {
+                opacity: 0.2;
+            }
+
+            100% {
+                transform: translateX(var(--ex, 0)) translateY(-110vh);
+                opacity: 0;
+            }
+        }
+
+        /* Card */
+        .login-wrap {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 420px;
+            padding: 1rem;
+        }
+
+        .login-card {
+            background: linear-gradient(145deg, #141414, #0e0e0e);
+            border: 1px solid rgba(201, 168, 76, 0.2);
+            border-radius: var(--radius);
+            padding: 2.5rem 2rem;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(201, 168, 76, 0.05);
+        }
+
+        .login-card.shake {
+            animation: shake 0.45s ease;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            15% {
+                transform: translateX(-8px);
+            }
+
+            30% {
+                transform: translateX(8px);
+            }
+
+            45% {
+                transform: translateX(-6px);
+            }
+
+            60% {
+                transform: translateX(6px);
+            }
+
+            75% {
+                transform: translateX(-3px);
+            }
+
+            90% {
+                transform: translateX(3px);
+            }
+        }
+
+        /* Brand */
+        .admin-brand {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .admin-logo-wrap {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            border: 2px solid rgba(201, 168, 76, 0.4);
+            background: var(--bg3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 24px rgba(201, 168, 76, 0.15);
+            font-size: 2rem;
+        }
+
+        .admin-logo-wrap img {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+            border-radius: 50%;
+        }
+
+        .admin-brand h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, var(--gold-light), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .admin-brand p {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 0.25rem;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 1.25rem;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-bottom: 0.5rem;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .input-wrap>svg {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 17px;
+            height: 17px;
+            stroke: var(--text-dim);
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            pointer-events: none;
+            transition: stroke .3s;
+        }
+
+        input[type="password"],
+        input[type="text"] {
+            width: 100%;
+            background: var(--bg3);
+            border: 1.5px solid rgba(255, 255, 255, 0.07);
+            border-radius: 10px;
+            padding: 0.85rem 3rem 0.85rem 2.75rem;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.92rem;
+            transition: border-color .25s, box-shadow .25s;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.12);
+        }
+
+        input:focus+svg {
+            stroke: var(--gold);
+        }
+
+        .toggle-pw {
+            position: absolute;
+            right: 0.85rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+        }
+
+        .toggle-pw svg {
+            width: 17px;
+            height: 17px;
+            stroke: var(--text-dim);
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            transition: stroke .25s;
+        }
+
+        .toggle-pw:hover svg {
+            stroke: var(--gold);
+        }
+
+        .error-msg {
+            font-size: 0.78rem;
+            color: var(--error);
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .error-msg.show {
+            display: block;
+        }
+
+        /* Button */
+        .btn-login {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--gold), #a87c28);
+            border: none;
+            border-radius: 10px;
+            color: #000;
+            font-family: inherit;
+            font-size: 0.92rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: transform .2s, box-shadow .2s;
+            box-shadow: 0 4px 20px rgba(201, 168, 76, 0.3);
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(201, 168, 76, 0.4);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .btn-login:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-login.loading .btn-text {
+            display: none;
+        }
+
+        .btn-login .btn-spinner {
+            display: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(0, 0, 0, .3);
+            border-top-color: #000;
+            border-radius: 50%;
+            animation: spin .7s linear infinite;
+            margin: 0 auto;
+        }
+
+        .btn-login.loading .btn-spinner {
+            display: block;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 1.4rem;
+            font-size: 0.82rem;
+            color: var(--text-dim);
+            text-decoration: none;
+            transition: color .2s;
+        }
+
+        .back-link:hover {
+            color: var(--gold);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="login-wrap">
+        <div class="login-card" id="login-card">
+
+            <div class="admin-brand">
+                <div class="admin-logo-wrap">
+                    <img src="../assets/logo.png" alt="Busamania RC"
+                        onerror="this.style.display='none'; this.parentElement.innerHTML='🏍️'">
+                </div>
+                <h1>BUSAMANIA RC</h1>
+                <p>Admin İdarəetmə Paneli</p>
+            </div>
+
+            <form id="login-form" autocomplete="off">
+                <div class="form-group">
+                    <label for="username-input">İstifadəçi adı</label>
+                    <div class="input-wrap">
+                        <input type="text" id="username-input" placeholder="İstifadəçi adını daxil edin" required
+                            autocomplete="username">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                            <circle cx="12" cy="7" r="4" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="pw-input">Şifrə</label>
+                    <div class="input-wrap">
+                        <input type="password" id="pw-input" placeholder="Şifrəni daxil edin" required
+                            autocomplete="current-password">
+                        <svg viewBox="0 0 24 24">
+                            <rect x="3" y="11" width="18" height="11" rx="2" />
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                        </svg>
+                        <button type="button" class="toggle-pw" id="toggle-pw" tabindex="-1">
+                            <svg id="eye-icon" viewBox="0 0 24 24">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                <circle cx="12" cy="12" r="3" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="error-msg" id="error-msg">İstifadəçi adı və ya şifrə yanlışdır.</div>
+                </div>
+
+                <button type="submit" class="btn-login" id="login-btn">
+                    <span class="btn-text">Daxil ol</span>
+                    <div class="btn-spinner"></div>
+                </button>
+            </form>
+
+        </div>
+        <a href="../index.html" class="back-link">← Sayta qayıt</a>
+    </div>
+
+    <script>
+        /* Particles */
+        for (let i = 0; i < 18; i++) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            p.style.cssText = `left:${Math.random() * 100}vw;--sx:0px;--ex:${(Math.random() - .5) * 80}px;--dur:${6 + Math.random() * 8}s;--delay:${Math.random() * 6}s`;
+            document.body.appendChild(p);
+        }
+
+        /* SHA-256 */
+        async function sha256(str) {
+            const buf = new TextEncoder().encode(str);
+            const hash = await crypto.subtle.digest('SHA-256', buf);
+            return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        /* Users */
+        const USERS_KEY = 'bm_admin_users';
+        async function initUsers() {
+            if (!localStorage.getItem(USERS_KEY)) {
+                const hash = await sha256('busamania2017');
+                localStorage.setItem(USERS_KEY, JSON.stringify([
+                    { username: 'admin', passwordHash: hash, role: 'superadmin' }
+                ]));
+            }
+        }
+        async function findUser(username, password) {
+            const users = JSON.parse(localStorage.getItem(USERS_KEY)) || [];
+            const h = await sha256(password);
+            return users.find(u => u.username.toLowerCase() === username.toLowerCase() && u.passwordHash === h) || null;
+        }
+
+        /* Password toggle */
+        const pwInput = document.getElementById('pw-input');
+        const toggleBtn = document.getElementById('toggle-pw');
+        const eyeIcon = document.getElementById('eye-icon');
+        let pwVisible = false;
+        toggleBtn.addEventListener('click', () => {
+            pwVisible = !pwVisible;
+            pwInput.type = pwVisible ? 'text' : 'password';
+            eyeIcon.innerHTML = pwVisible
+                ? '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>'
+                : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+        });
+
+        /* Login */
+        const form = document.getElementById('login-form');
+        const btn = document.getElementById('login-btn');
+        const card = document.getElementById('login-card');
+        const errorMsg = document.getElementById('error-msg');
+        const userInput = document.getElementById('username-input');
+
+        function showError() {
+            errorMsg.classList.add('show');
+            card.classList.remove('shake');
+            void card.offsetWidth;
+            card.classList.add('shake');
+        }
+
+        form.addEventListener('submit', async e => {
+            e.preventDefault();
+            const username = userInput.value.trim();
+            const password = pwInput.value;
+            if (!username || !password) return;
+
+            btn.classList.add('loading'); btn.disabled = true;
+            errorMsg.classList.remove('show');
+
+            try {
+                await initUsers();
+                const user = await findUser(username, password);
+                if (user) {
+                    localStorage.setItem('bm_admin_session',
+                        btoa(JSON.stringify({ username: user.username, role: user.role, ts: Date.now() })));
+                    window.location.href = 'dashboard.html';
+                } else {
+                    showError();
+                    pwInput.value = '';
+                    pwInput.focus();
+                }
+            } catch {
+                errorMsg.textContent = 'Giriş xətası baş verdi.';
+                errorMsg.classList.add('show');
+            } finally {
+                btn.classList.remove('loading'); btn.disabled = false;
+            }
+        });
+
+        initUsers();
+        if (localStorage.getItem('bm_admin_session')) window.location.href = 'dashboard.html';
+        card.addEventListener('animationend', () => card.classList.remove('shake'));
+    </script>
+</body>
+
+</html>

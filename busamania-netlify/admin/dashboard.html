@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+<html lang="az">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel — Busamania RC</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;900&display=swap"
+        rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --gold: #C9A84C;
+            --gold-light: #E8C96A;
+            --gold-dim: rgba(201, 168, 76, 0.12);
+            --gold-border: rgba(201, 168, 76, 0.25);
+            --bg: #0B0B0B;
+            --bg2: #111111;
+            --bg3: #181818;
+            --bg4: #222222;
+            --text: #E8E8E8;
+            --text-dim: #888;
+            --text-muted: #555;
+            --error: #ff4d4d;
+            --success: #4dff91;
+            --warning: #ffb84d;
+            --radius: 10px;
+            --sidebar-w: 240px;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* ══════════════════════════════════════
+           SIDEBAR
+        ══════════════════════════════════════ */
+        .sidebar {
+            width: var(--sidebar-w);
+            min-height: 100vh;
+            background: var(--bg2);
+            border-right: 1px solid var(--gold-border);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            z-index: 100;
+            transition: transform 0.3s;
+        }
+
+        .sidebar-brand {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--gold-border);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .sidebar-logo {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 1.5px solid var(--gold-border);
+            object-fit: contain;
+            flex-shrink: 0;
+        }
+
+        .sidebar-brand-text h2 {
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            background: linear-gradient(135deg, var(--gold-light), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .sidebar-brand-text p {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 1rem 0;
+            overflow-y: auto;
+        }
+
+        .nav-section-label {
+            font-size: 0.6rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            padding: 0.75rem 1.25rem 0.25rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.7rem 1.25rem;
+            cursor: pointer;
+            color: var(--text-dim);
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: background 0.2s, color 0.2s;
+            border-left: 3px solid transparent;
+            user-select: none;
+        }
+
+        .nav-item:hover {
+            background: var(--gold-dim);
+            color: var(--text);
+        }
+
+        .nav-item.active {
+            background: var(--gold-dim);
+            color: var(--gold);
+            border-left-color: var(--gold);
+        }
+
+        .nav-item svg {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+        }
+
+        .sidebar-footer {
+            padding: 1rem 1.25rem;
+            border-top: 1px solid var(--gold-border);
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .btn-site-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-dim);
+            font-size: 0.8rem;
+            text-decoration: none;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .btn-site-link:hover {
+            background: var(--bg3);
+            color: var(--gold);
+        }
+
+        .btn-site-link svg {
+            width: 14px;
+            height: 14px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+        }
+
+        .btn-logout {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: none;
+            border: 1px solid rgba(255, 77, 77, 0.2);
+            color: #ff4d4d;
+            font-family: inherit;
+            font-size: 0.8rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255, 77, 77, 0.08);
+        }
+
+        .btn-logout svg {
+            width: 14px;
+            height: 14px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+        }
+
+        /* ══════════════════════════════════════
+           MAIN CONTENT
+        ══════════════════════════════════════ */
+        .main {
+            margin-left: var(--sidebar-w);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            padding: 1rem 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg2);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .topbar h1 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .topbar-time {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        .content {
+            padding: 2rem;
+            flex: 1;
+        }
+
+        /* ══════════════════════════════════════
+           PANELS
+        ══════════════════════════════════════ */
+        .panel {
+            display: none;
+        }
+
+        .panel.active {
+            display: block;
+        }
+
+        /* ── Overview cards ── */
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .overview-card {
+            background: var(--bg2);
+            border: 1px solid var(--gold-border);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .overview-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--gold), transparent);
+        }
+
+        .overview-card .ov-num {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--gold);
+            line-height: 1;
+        }
+
+        .overview-card .ov-label {
+            font-size: 0.78rem;
+            color: var(--text-dim);
+            margin-top: 0.25rem;
+        }
+
+        .overview-card .ov-icon {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.8rem;
+            opacity: 0.15;
+        }
+
+        /* ── Section cards ── */
+        .section-card {
+            background: var(--bg2);
+            border: 1px solid var(--gold-border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-card-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .section-card-header h2 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--gold);
+        }
+
+        .section-card-body {
+            padding: 1.5rem;
+        }
+
+        /* ── Form elements ── */
+        .form-row {
+            display: grid;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-row.cols-2 {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .form-row.cols-3 {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .form-group label {
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+        }
+
+        .form-control {
+            background: var(--bg3);
+            border: 1.5px solid rgba(255, 255, 255, 0.07);
+            border-radius: 8px;
+            padding: 0.7rem 0.9rem;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            width: 100%;
+        }
+
+        .form-control:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.1);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* ── Image upload ── */
+        .img-upload-area {
+            border: 2px dashed rgba(201, 168, 76, 0.3);
+            border-radius: 8px;
+            padding: 1.25rem;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+            position: relative;
+        }
+
+        .img-upload-area:hover,
+        .img-upload-area.drag-over {
+            border-color: var(--gold);
+            background: var(--gold-dim);
+        }
+
+        .img-upload-area input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+
+        .img-upload-area .upload-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .img-upload-area p {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+
+        .img-upload-area .upload-or {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin: 0.4rem 0;
+        }
+
+        .img-preview-wrap {
+            margin-top: 0.75rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .img-preview {
+            max-width: 120px;
+            max-height: 80px;
+            border-radius: 6px;
+            border: 1px solid var(--gold-border);
+            object-fit: cover;
+        }
+
+        /* ── Buttons ── */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.65rem 1.25rem;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            letter-spacing: 0.5px;
+        }
+
+        .btn svg {
+            width: 15px;
+            height: 15px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, var(--gold), #a87c28);
+            color: #000;
+            box-shadow: 0 2px 12px rgba(201, 168, 76, 0.25);
+        }
+
+        .btn-gold:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px rgba(201, 168, 76, 0.35);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid var(--gold-border);
+            color: var(--gold);
+        }
+
+        .btn-outline:hover {
+            background: var(--gold-dim);
+            border-color: var(--gold);
+        }
+
+        .btn-danger {
+            background: rgba(255, 77, 77, 0.1);
+            border: 1px solid rgba(255, 77, 77, 0.2);
+            color: #ff4d4d;
+        }
+
+        .btn-danger:hover {
+            background: rgba(255, 77, 77, 0.2);
+        }
+
+        .btn-sm {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.78rem;
+        }
+
+        .btn-icon {
+            padding: 0.4rem;
+            border-radius: 6px;
+        }
+
+        /* ── List items ── */
+        .list-items {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .list-item {
+            background: var(--bg3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .list-item-thumb {
+            width: 48px;
+            height: 48px;
+            border-radius: 6px;
+            object-fit: cover;
+            border: 1px solid var(--gold-border);
+            flex-shrink: 0;
+        }
+
+        .list-item-thumb-placeholder {
+            width: 48px;
+            height: 48px;
+            border-radius: 6px;
+            background: var(--bg4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .list-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .list-item-name {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .list-item-sub {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .list-item-actions {
+            display: flex;
+            gap: 0.4rem;
+            flex-shrink: 0;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            background: var(--gold-dim);
+            color: var(--gold);
+            border: 1px solid var(--gold-border);
+        }
+
+        /* ── Member drag handle ── */
+        .drag-handle {
+            cursor: grab;
+            color: var(--text-muted);
+            padding: 0 0.25rem;
+            font-size: 1.1rem;
+            user-select: none;
+        }
+
+        .drag-handle:active {
+            cursor: grabbing;
+        }
+
+        .list-item.dragging {
+            opacity: 0.4;
+            background: var(--gold-dim);
+        }
+
+        .list-item.drag-over-top {
+            border-top: 2px solid var(--gold);
+        }
+
+        .list-item.drag-over-bottom {
+            border-bottom: 2px solid var(--gold);
+        }
+
+        /* ── Divider ── */
+        .divider {
+            border: none;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            margin: 1.25rem 0;
+        }
+
+        /* ── Gallery grid preview ── */
+        .gallery-preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .gallery-preview-item {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            aspect-ratio: 4/3;
+            border: 1px solid var(--gold-border);
+        }
+
+        .gallery-preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .gallery-preview-item .gal-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .gallery-preview-item:hover .gal-overlay {
+            opacity: 1;
+        }
+
+        .gallery-preview-item .gal-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 0.3rem 0.5rem;
+            font-size: 0.68rem;
+            color: #fff;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* ── Toast ── */
+        #toast-container {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            pointer-events: none;
+        }
+
+        .toast {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.8rem 1.2rem;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            backdrop-filter: blur(12px);
+            pointer-events: all;
+            animation: toastIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+            max-width: 320px;
+        }
+
+        .toast.success {
+            background: rgba(20, 40, 30, 0.95);
+            border: 1px solid rgba(77, 255, 145, 0.3);
+            color: var(--success);
+        }
+
+        .toast.error {
+            background: rgba(40, 15, 15, 0.95);
+            border: 1px solid rgba(255, 77, 77, 0.3);
+            color: var(--error);
+        }
+
+        .toast.info {
+            background: rgba(20, 20, 40, 0.95);
+            border: 1px solid var(--gold-border);
+            color: var(--gold);
+        }
+
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateX(30px) scale(0.9);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+        }
+
+        @keyframes toastOut {
+            to {
+                opacity: 0;
+                transform: translateX(30px) scale(0.9);
+            }
+        }
+
+        /* ── Modal ── */
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(4px);
+            z-index: 500;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-backdrop.open {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg2);
+            border: 1px solid var(--gold-border);
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 520px;
+            width: 90%;
+            position: relative;
+            animation: modalIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 1.25rem;
+            color: var(--gold);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 6px;
+            transition: color 0.2s, background 0.2s;
+        }
+
+        .modal-close:hover {
+            color: var(--text);
+            background: var(--bg3);
+        }
+
+        .modal-close svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+            justify-content: flex-end;
+        }
+
+        /* ── Responsive ── */
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text);
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .menu-toggle svg {
+            width: 22px;
+            height: 22px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .menu-toggle {
+                display: flex;
+            }
+
+            .form-row.cols-2,
+            .form-row.cols-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .content {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ═══ SIDEBAR ═══ -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <img src="../assets/logo.png" alt="Busamania RC" class="sidebar-logo" onerror="this.style.display='none'">
+            <div class="sidebar-brand-text">
+                <h2>BUSAMANIA RC</h2>
+                <p>Admin Panel</p>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section-label">Məzmun</div>
+            <div class="nav-item active" data-panel="overview">
+                <svg viewBox="0 0 24 24">
+                    <rect x="3" y="3" width="7" height="7" rx="1" />
+                    <rect x="14" y="3" width="7" height="7" rx="1" />
+                    <rect x="3" y="14" width="7" height="7" rx="1" />
+                    <rect x="14" y="14" width="7" height="7" rx="1" />
+                </svg>
+                Ümumi Baxış
+            </div>
+            <div class="nav-item" data-panel="about">
+                <svg viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+                Haqqımızda
+            </div>
+            <div class="nav-item" data-panel="members">
+                <svg viewBox="0 0 24 24">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+                Üzvlər
+            </div>
+            <div class="nav-item" data-panel="gallery">
+                <svg viewBox="0 0 24 24">
+                    <rect x="3" y="3" width="18" height="18" rx="2" />
+                    <circle cx="8.5" cy="8.5" r="1.5" />
+                    <polyline points="21 15 16 10 5 21" />
+                </svg>
+                Qalereya
+            </div>
+            <div class="nav-item" data-panel="charter">
+                <svg viewBox="0 0 24 24">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="16" y1="13" x2="8" y2="13" />
+                    <line x1="16" y1="17" x2="8" y2="17" />
+                    <polyline points="10 9 9 9 8 9" />
+                </svg>
+                Nizamnamə
+            </div>
+
+
+            <div class="nav-section-label" style="margin-top:1rem;">Sistem</div>
+            <div class="nav-item" data-panel="settings">
+                <svg viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="3" />
+                    <path
+                        d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                </svg>
+                Parametrlər
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="../index.html" class="btn-site-link">
+                <svg viewBox="0 0 24 24">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                    <polyline points="15 3 21 3 21 9" />
+                    <line x1="10" y1="14" x2="21" y2="3" />
+                </svg>
+                Sayta Bax
+            </a>
+            <button class="btn-logout" id="logout-btn">
+                <svg viewBox="0 0 24 24">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    <polyline points="16 17 21 12 16 7" />
+                    <line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+                Çıxış
+            </button>
+        </div>
+    </aside>
+
+    <!-- ═══ MAIN ═══ -->
+    <div class="main">
+        <div class="topbar">
+            <div style="display:flex;align-items:center;gap:0.75rem;">
+                <button class="menu-toggle" id="menu-toggle">
+                    <svg viewBox="0 0 24 24">
+                        <line x1="3" y1="12" x2="21" y2="12" />
+                        <line x1="3" y1="6" x2="21" y2="6" />
+                        <line x1="3" y1="18" x2="21" y2="18" />
+                    </svg>
+                </button>
+                <h1 id="topbar-title">Ümumi Baxış</h1>
+            </div>
+            <div style="display:flex;align-items:center;gap:1.25rem;">
+                <div style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;" id="manual-deploy"
+                    title="Manual deploy">
+                    <span id="deploy-dot"
+                        style="width:8px;height:8px;border-radius:50%;background:var(--text-muted);display:inline-block;transition:all 0.3s;"></span>
+                    <span id="deploy-status" style="font-size:0.75rem;color:var(--text-dim);">Hazır</span>
+                </div>
+                <div class="topbar-time" id="topbar-time"></div>
+            </div>
+        </div>
+
+        <div class="content">
+
+            <!-- ══ OVERVIEW PANEL ══ -->
+            <div id="panel-overview" class="panel active">
+                <div class="overview-grid">
+                    <div class="overview-card">
+                        <div class="ov-num" id="ov-members">0</div>
+                        <div class="ov-label">Üzv</div>
+                        <div class="ov-icon">👥</div>
+                    </div>
+                    <div class="overview-card">
+                        <div class="ov-num" id="ov-gallery">0</div>
+                        <div class="ov-label">Qalereya Şəkli</div>
+                        <div class="ov-icon">🖼️</div>
+                    </div>
+                    <div class="overview-card">
+                        <div class="ov-num" id="ov-charter">0</div>
+                        <div class="ov-label">Nizamnamə Qaydası</div>
+                        <div class="ov-icon">📜</div>
+                    </div>
+                    <div class="overview-card">
+                        <div class="ov-num" id="ov-year">2017</div>
+                        <div class="ov-label">Quruluş İli</div>
+                        <div class="ov-icon">🏍️</div>
+                    </div>
+                </div>
+                <div class="section-card">
+                    <div class="section-card-header">
+                        <h2>Xoş Gəldiniz</h2>
+                    </div>
+                    <div class="section-card-body">
+                        <p style="color:var(--text-dim);font-size:0.9rem;line-height:1.7;">
+                            Busamania RC Admin Panelinə xoş gəldiniz. Sol menudən bölməni seçərək sayt məzmununu idarə
+                            edə bilərsiniz.
+                            Bütün dəyişikliklər avtomatik olaraq sayta tətbiq olunur.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ══ ABOUT PANEL ══ -->
+            <div id="panel-about" class="panel">
+                <div class="section-card">
+                    <div class="section-card-header">
+                        <h2>📄 Haqqımızda Məzmunu</h2>
+                    </div>
+                    <div class="section-card-body">
+                        <div class="form-group" style="margin-bottom:1rem;">
+                            <label>Giriş Mətni</label>
+                            <textarea class="form-control" id="about-intro" rows="4"
+                                placeholder="Klub haqqında giriş mətni..."></textarea>
+                        </div>
+                        <div class="form-row cols-2">
+                            <div class="form-group">
+                                <label>Missiyamız</label>
+                                <textarea class="form-control" id="about-mission" rows="5"
+                                    placeholder="Klub missionu..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Vizyonumuz</label>
+                                <textarea class="form-control" id="about-vision" rows="5"
+                                    placeholder="Klub vizyonu..."></textarea>
+                            </div>
+                        </div>
+                        <button class="btn btn-gold" id="save-about">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                                <polyline points="17 21 17 13 7 13 7 21" />
+                                <polyline points="7 3 7 8 15 8" />
+                            </svg>
+                            Yadda Saxla
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ══ MEMBERS PANEL ══ -->
+            <div id="panel-members" class="panel">
+                <div class="section-card">
+                    <div class="section-card-header">
+                        <h2>➕ Yeni Üzv Əlavə Et</h2>
+                    </div>
+                    <div class="section-card-body">
+                        <div class="form-row cols-2">
+                            <div class="form-group">
+                                <label>Ad Soyad *</label>
+                                <input type="text" class="form-control" id="mem-name" placeholder="Üzvün adı">
+                            </div>
+                            <div class="form-group">
+                                <label>Vəzifə *</label>
+                                <select class="form-control" id="mem-role">
+                                    <option value="President">🏆 President</option>
+                                    <option value="Vitse-President">🥈 Vitse-President</option>
+                                    <option value="Katib">📋 Katib</option>
+                                    <option value="Xəzinədar">💰 Xəzinədar</option>
+                                    <option value="Mexanik">🔧 Mexanik</option>
+                                    <option value="Üzv" selected>🏍️ Üzv</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row cols-2">
+                            <div class="form-group">
+                                <label>Motosiklet</label>
+                                <input type="text" class="form-control" id="mem-bike" placeholder="Hayabusa Gen 3">
+                            </div>
+                            <div class="form-group">
+                                <label>Bio / Qeyd</label>
+                                <input type="text" class="form-control" id="mem-bio" placeholder="Qısa məlumat...">
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-bottom:0.75rem;">
+                            <label>Şəkil URL</label>
+                            <input type="text" class="form-control" id="mem-img-url"
+                                placeholder="https://... (ixtiyari)">
+                        </div>
+                        <div class="form-group" style="margin-bottom:1rem;">
+                            <label>Şəkil Yüklə</label>
+                            <div class="img-upload-area" id="mem-upload-area">
+                                <input type="file" id="mem-img-file" accept="image/*">
+                                <div class="upload-icon">📤</div>
+                                <p>Şəkli buraya sürükləyin</p>
+                                <div class="upload-or">— və ya —</div>
+                                <p style="color:var(--gold);font-size:0.78rem;">Faylı seçin</p>
+                            </div>
+                            <div id="mem-preview-wrap" class="img-preview-wrap" style="display:none;">
+                                <img id="mem-img-preview" class="img-preview" src="" alt="Önizləmə">
+                            </div>
+                        </div>
+                        <button class="btn btn-gold" id="add-member">
+                            <svg viewBox="0 0 24 24">
+                                <line x1="12" y1="5" x2="12" y2="19" />
+                                <line x1="5" y1="12" x2="19" y2="12" />
+                            </svg>
+                            Üzv Əlavə Et
+                        </button>
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-card-header">
+                        <h2>👥 Mövcud Üzvlər</h2>
+                        <span style="font-size:0.75rem;color:var(--text-dim);">Sıralamaq üçün sürükləyin</span>
+                    </div>
+                    <div class="section-card-body">
+                        <div class="list-items" id="members-list"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ══ GALLERY PANEL ══ -->
+            <div id="panel-gallery" class="panel">
+                <div class="section-card">
+                    <div class="section-card-header">
+                        <h2>➕ Şəkil Əlavə Et</h2>
+                    </div>
+                    <div class="section-card-body">
+                        <div class="form-row cols-2">
+                            <div class="form-group">
+                                <label>URL ilə əlavə et</label>
+                                <input type="text" class="form-control" id="gal-url" placeholder="https://...">
+                            </div>
+                            <div class="form-group">
+                                <label>Başlıq (ixtiyari)</label>
+                                <input type="text" class="form-control" id="gal-caption"
+                                    placeholder="Şəklin başlığı...">
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-bottom:1rem;">
+                            <label>və ya Fayl Yüklə</label>
+                            <div class="img-upload-area" id="gal-upload-area">
+                                <input type="file" id="gal-img-file" accept="image/*" multiple>
+                                <div class="upload-icon">📷</div>
+                                <p>Bir neçə şəkil seçə bilərsiniz</p>
+                                <div class="upload-or">— faylı seçin —</div>
+                            </div>
+                        </div>
+                        <button class="btn btn-gold" id="add-gallery">
+                            <svg viewBox="0 0 24 24">
+                                <line x1="12" y1="5" x2="12" y2="19" />
+                                <line x1="5" y1="12" x2="19" y2="12" />
+                            </svg>
+                            Şəkil Əlavə Et
+                        </button>
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-card-header">
+                        <h2>🖼️ Qalereya (<span id="gallery-count">0</span>)</h2>
+                    </div>
+                    <div class="section-card-body">
+                        <div class="gallery-preview-grid" id="gallery-grid"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ══ CHARTER PANEL ══ -->
+            <div id="panel-charter" class="panel">
+                <div class="section-card">
+                    <div class="section-card-header">
+                        <h2>➕ Yeni Qayda Əlavə Et</h2>
+                    </div>
+                    <div class="section-card-body">
+                        <div class="form-group" style="margin-bottom:0.75rem;">
+                            <label>Başlıq *</label>
+                            <input type="text" class="form-control" id="charter-title"
+                                placeholder="Məs: Maddə 1: Hörmət və Qardaşlıq">
+                        </div>
+                        <div class="form-group" style="margin-bottom:1rem;">
+                            <label>Məzmun *</label>
+                            <textarea class="form-control" id="charter-content" rows="4"
+                                placeholder="Qaydanın ətraflı izahı..."></textarea>
+                        </div>
+                        <button class="btn btn-gold" id="add-charter">
+                            <svg viewBox="0 0 24 24">
+                                <line x1="12" y1="5" x2="12" y2="19" />
+                                <line x1="5" y1="12" x2="19" y2="12" />
+                            </svg>
+                            Qayda Əlavə Et
+                        </button>
+                    </div>
+                </div>
+                <div class="section-card">
+                    <div class="section-card-header">
+                        <h2>📜 Mövcud Qaydalar</h2>
+                    </div>
+                    <div class="section-card-body">
+                        <div class="list-items" id="charter-list"></div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <!-- ══ SETTINGS PANEL ══ -->
+            <div id="panel-settings" class="panel">
+                <div class="section-card">
+                    <div class="section-card-header">
+                        <h2>🔒 Şifrəni Dəyiş</h2>
+                    </div>
+                    <div class="section-card-body">
+                        <div class="form-group" style="margin-bottom:0.75rem;">
+                            <label>Mövcud Şifrə</label>
+                            <input type="password" class="form-control" id="pw-current"
+                                placeholder="Mövcud şifrəni daxil edin">
+                        </div>
+                        <div class="form-row cols-2">
+                            <div class="form-group">
+                                <label>Yeni Şifrə</label>
+                                <input type="password" class="form-control" id="pw-new"
+                                    placeholder="Yeni şifrə (min 6 simvol)">
+                            </div>
+                            <div class="form-group">
+                                <label>Yeni Şifrəni Təsdiqlə</label>
+                                <input type="password" class="form-control" id="pw-confirm"
+                                    placeholder="Yenidən daxil edin">
+                            </div>
+                        </div>
+                        <button class="btn btn-gold" id="change-pw">
+                            <svg viewBox="0 0 24 24">
+                                <rect x="3" y="11" width="18" height="11" rx="2" />
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                            </svg>
+                            Şifrəni Yenilə
+                        </button>
+                    </div>
+                </div>
+                <div class="section-card">
+                    <div class="section-card-header">
+                        <h2>👥 İstifadəçilər</h2>
+                    </div>
+                    <div class="section-card-body">
+                        <!-- Add new user form -->
+                        <div class="form-row cols-3" style="margin-bottom:1rem;">
+                            <div class="form-group">
+                                <label>İstifadəçi adı *</label>
+                                <input type="text" class="form-control" id="new-user-name" placeholder="məs: moderator">
+                            </div>
+                            <div class="form-group">
+                                <label>Şifrə *</label>
+                                <input type="password" class="form-control" id="new-user-pw"
+                                    placeholder="Min. 6 simvol">
+                            </div>
+                            <div class="form-group">
+                                <label>Rol</label>
+                                <select class="form-control" id="new-user-role">
+                                    <option value="admin">Admin</option>
+                                    <option value="moderator">Moderator</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button class="btn btn-gold" id="add-user" style="margin-bottom:1.5rem;">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                <circle cx="8.5" cy="7" r="4" />
+                                <line x1="20" y1="8" x2="20" y2="14" />
+                                <line x1="23" y1="11" x2="17" y2="11" />
+                            </svg>
+                            İstifadəçi Əlavə Et
+                        </button>
+                        <!-- Users list -->
+                        <div id="users-list"></div>
+                    </div>
+                </div>
+                <div class="section-card">
+                    <div class="section-card-header">
+                        <h2>🗑️ Məlumatları Sıfırla</h2>
+                    </div>
+                    <div class="section-card-body">
+                        <p style="color:var(--text-dim);font-size:0.85rem;margin-bottom:1rem;">Diqqət: Bu əməliyyat
+                            bütün məzmun dəyişikliklərini geri qaytararaq default məlumatlara keçid edəcək.</p>
+                        <button class="btn btn-danger" id="reset-data">
+                            <svg viewBox="0 0 24 24">
+                                <polyline points="1 4 1 10 7 10" />
+                                <path d="M3.51 15a9 9 0 1 0 .49-3.51" />
+                            </svg>
+                            Bütün Məlumatları Sıfırla
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="section-card">
+                <div class="section-card-header">
+                    <h2>🚀 Deploy Ayarları (GitHub → Netlify)</h2>
+                </div>
+                <div class="section-card-body">
+                    <p style="color:var(--text-dim);font-size:0.85rem;margin-bottom:1rem;line-height:1.7;">
+                        Admin paneldə dəyişiklik etdikdə məlumatlar avtomatik olaraq GitHub-a commit edilir və Netlify
+                        yenidən deploy olunur.
+                        Aşağıdakı məlumatları doldurub <strong>Yadda Saxla</strong> düyməsinə basın.
+                    </p>
+                    <div class="form-row cols-2">
+                        <div class="form-group">
+                            <label>GitHub Token *</label>
+                            <input type="password" class="form-control" id="deploy-token"
+                                placeholder="ghp_xxxxxxxxxxxx">
+                        </div>
+                        <div class="form-group">
+                            <label>Branch</label>
+                            <input type="text" class="form-control" id="deploy-branch" placeholder="main">
+                        </div>
+                    </div>
+                    <div class="form-row cols-2">
+                        <div class="form-group">
+                            <label>Repo Sahibi (Owner) *</label>
+                            <input type="text" class="form-control" id="deploy-owner" placeholder="məs: username">
+                        </div>
+                        <div class="form-group">
+                            <label>Repo Adı *</label>
+                            <input type="text" class="form-control" id="deploy-repo"
+                                placeholder="məs: busamania-netlify">
+                        </div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;">
+                        <input type="checkbox" id="deploy-auto" checked
+                            style="accent-color:var(--gold);width:18px;height:18px;">
+                        <label for="deploy-auto"
+                            style="font-size:0.85rem;color:var(--text-dim);cursor:pointer;">Dəyişikliklərdə avtomatik
+                            deploy et</label>
+                    </div>
+                    <div style="display:flex;gap:0.75rem;align-items:center;">
+                        <button class="btn btn-gold" id="save-deploy-settings">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                                <polyline points="17 21 17 13 7 13 7 21" />
+                                <polyline points="7 3 7 8 15 8" />
+                            </svg>
+                            Yadda Saxla
+                        </button>
+                        <button class="btn btn-outline" id="manual-deploy-btn">
+                            <svg viewBox="0 0 24 24">
+                                <polyline points="1 4 1 10 7 10" />
+                                <path d="M3.51 15a9 9 0 1 0 .49-3.51" />
+                            </svg>
+                            İndi Deploy Et
+                        </button>
+                    </div>
+                    <p style="font-size:0.72rem;color:var(--text-muted);margin-top:0.75rem;">Son deploy: <span
+                            id="last-deploy-time">bilinmir</span></p>
+                </div>
+            </div>
+
+
+        </div><!-- /content -->
+    </div><!-- /main -->
+
+    <!-- ══ MEMBER EDIT MODAL ══ -->
+    <div class="modal-backdrop" id="edit-member-modal">
+        <div class="modal">
+            <button class="modal-close" id="close-edit-member">
+                <svg viewBox="0 0 24 24">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+            </button>
+            <h3>✏️ Üzvü Redaktə Et</h3>
+            <input type="hidden" id="edit-mem-index">
+            <div class="form-row cols-2" style="margin-bottom:0;">
+                <div class="form-group"><label>Ad Soyad</label><input type="text" class="form-control"
+                        id="edit-mem-name"></div>
+                <div class="form-group"><label>Vəzifə</label>
+                    <select class="form-control" id="edit-mem-role">
+                        <option value="President">🏆 President</option>
+                        <option value="Vitse-President">🥈 Vitse-President</option>
+                        <option value="Katib">📋 Katib</option>
+                        <option value="Xəzinədar">💰 Xəzinədar</option>
+                        <option value="Mexanik">🔧 Mexanik</option>
+                        <option value="Üzv">🏍️ Üzv</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row cols-2">
+                <div class="form-group"><label>Motosiklet</label><input type="text" class="form-control"
+                        id="edit-mem-bike"></div>
+                <div class="form-group"><label>Bio</label><input type="text" class="form-control" id="edit-mem-bio">
+                </div>
+            </div>
+            <div class="form-group" style="margin-bottom:0.5rem;"><label>Şəkil URL</label><input type="text"
+                    class="form-control" id="edit-mem-img-url"></div>
+            <div class="form-group">
+                <label>Şəkil Yüklə</label>
+                <div class="img-upload-area">
+                    <input type="file" id="edit-mem-img-file" accept="image/*">
+                    <div class="upload-icon">📤</div>
+                    <p style="font-size:0.78rem;">Yeni şəkil seçin</p>
+                </div>
+                <div id="edit-mem-preview-wrap" style="display:none;margin-top:0.5rem;">
+                    <img id="edit-mem-img-preview" class="img-preview" src="" alt="">
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" id="cancel-edit-member">Ləğv et</button>
+                <button class="btn btn-gold" id="save-edit-member">Yadda Saxla</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ CONFIRM MODAL ══ -->
+    <div class="modal-backdrop" id="confirm-modal">
+        <div class="modal" style="max-width:380px;">
+            <h3 id="confirm-title">Silmək istəyirsiniz?</h3>
+            <p id="confirm-msg" style="color:var(--text-dim);font-size:0.875rem;line-height:1.6;"></p>
+            <div class="modal-actions">
+                <button class="btn btn-outline" id="confirm-cancel">Ləğv et</button>
+                <button class="btn btn-danger" id="confirm-ok">Sil</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ TOAST CONTAINER ══ -->
+    <div id="toast-container"></div>
+
+    <script src="admin.js"></script>
+</body>
+
+</html>
